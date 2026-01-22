@@ -29,7 +29,7 @@ public class AttendantController {
 
   @GetMapping
   @Operation(summary = "Listar atendentes (opcional por time)")
-  public List<AttendantResponse> list(@RequestParam(required = false) Team team) {
+  public List<AttendantResponse> list(@RequestParam(name = "team", required = false) Team team) {
     return service.list(team);
   }
 
