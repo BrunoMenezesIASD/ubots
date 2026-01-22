@@ -1,7 +1,7 @@
 package com.flowpay.atendimento.service.impl;
 
 import com.flowpay.atendimento.dto.mapper.ServiceRequestMapper;
-import com.flowpay.atendimento.dto.request.CreateServiceRequestRequest;
+import com.flowpay.atendimento.dto.request.CreateServiceRequest;
 import com.flowpay.atendimento.dto.response.ServiceRequestResponse;
 import com.flowpay.atendimento.enums.ServiceRequestStatus;
 import com.flowpay.atendimento.enums.Team;
@@ -23,7 +23,7 @@ public class ServiceRequestServiceImpl implements ServiceRequestService {
   private final ServiceRequestRepository repository;
 
   @Override
-  public ServiceRequestResponse create(CreateServiceRequestRequest req) {
+  public ServiceRequestResponse create(CreateServiceRequest req) {
     return ServiceRequestMapper.toResponse(distributionService.createAndDistribute(req.getCustomerName(), req.getSubject()));
   }
 

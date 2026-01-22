@@ -1,6 +1,6 @@
 package com.flowpay.atendimento.controller;
 
-import com.flowpay.atendimento.dto.request.CreateServiceRequestRequest;
+import com.flowpay.atendimento.dto.request.CreateServiceRequest;
 import com.flowpay.atendimento.dto.response.ServiceRequestResponse;
 import com.flowpay.atendimento.enums.ServiceRequestStatus;
 import com.flowpay.atendimento.enums.Team;
@@ -23,7 +23,7 @@ public class ServiceRequestController {
 
   @PostMapping
   @Operation(summary = "Criar atendimento e distribuir/enfileirar automaticamente")
-  public ServiceRequestResponse create(@Valid @RequestBody CreateServiceRequestRequest req) {
+  public ServiceRequestResponse create(@Valid @RequestBody CreateServiceRequest req) {
     return service.create(req);
   }
 

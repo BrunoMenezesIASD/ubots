@@ -1,4 +1,4 @@
-CREATE TABLE attendants (
+CREATE TABLE IF NOT EXISTS attendants (
   id BIGSERIAL PRIMARY KEY,
   name VARCHAR(120) NOT NULL,
   team VARCHAR(30) NOT NULL,
@@ -6,7 +6,7 @@ CREATE TABLE attendants (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE service_requests (
+CREATE TABLE IF NOT EXISTS service_requests (
   id BIGSERIAL PRIMARY KEY,
   customer_name VARCHAR(120) NOT NULL,
   subject VARCHAR(200) NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE service_requests (
     FOREIGN KEY (assigned_attendant_id) REFERENCES attendants(id)
 );
 
-CREATE TABLE queue_items (
+CREATE TABLE IF NOT EXISTS queue_items (
   id BIGSERIAL PRIMARY KEY,
   service_request_id BIGINT NOT NULL UNIQUE,
   team VARCHAR(30) NOT NULL,
