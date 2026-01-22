@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:16
+    container_name: flowpay_postgres
+    environment:
+      POSTGRES_DB: flowpay
+      POSTGRES_USER: flowpay
+      POSTGRES_PASSWORD: flowpay
+    ports:
+      - "5432:5432"
+    volumes:
+      - flowpay_pgdata:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+    container_name: flowpay_backend
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/flowpay
+      SPRING_DATASOURCE_USERNAME: flowpay
+      SPRING_DATASOURCE_PASSWORD: flowpay
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
+volumes:
+  flowpay_pgdata:

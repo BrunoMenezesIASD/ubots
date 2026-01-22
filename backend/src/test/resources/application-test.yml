@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:tc:postgresql:16:///flowpay_test
+    username: flowpay
+    password: flowpay
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
