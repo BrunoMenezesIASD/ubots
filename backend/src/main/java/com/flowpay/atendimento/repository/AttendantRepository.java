@@ -13,23 +13,24 @@ public interface AttendantRepository extends JpaRepository<Attendant, Long> {
 
   List<Attendant> findByTeamOrderByIdAsc(Team team);
 
-  @Query(value =
-      "SELECT a.id " +
-      "FROM attendants a " +
-      "LEFT JOIN service_requests r " +
-      "  ON r.assigned_attendant_id = a.id " +
-      " AND r.status = 'ASSIGNED' " +
-      "WHERE a.team = :team " +
-      "  AND a.active = true " +
-      "GROUP BY a.id " +
-      "HAVING COUNT(r.id) < 3 " +
-      "ORDER BY COUNT(r.id) ASC, a.id ASC " +
-      "LIMIT 1 " +
-      "FOR UPDATE",
-      nativeQuery = true)
-  Long lockBestAvailableAttendantId(@Param("team") String team);
+    @Query(value = """
+        SELECT a.id
+        FROM attendants a
+        LEFT JOIN LATERAL (
+          SELECT count(*) AS cnt
+          FROM service_requests r
+          WHERE r.assigned_attendant_id = a.id
+            AND r.status = 'ASSIGNED'
+        ) w ON true
+        WHERE a.team = :team
+          AND a.active = true
+          AND w.cnt < 3
+        ORDER BY w.cnt ASC, a.id ASC
+        LIMIT 1
+        FOR UPDATE OF a SKIP LOCKED
+        """, nativeQuery = true)
+    Optional<Long> lockBestAvailableAttendantId(@Param("team") String team);
 
-  @Lock(LockModeType.PESSIMISTIC_WRITE)
-  @Query("select a from Attendant a where a.id = :id")
-  Optional<Attendant> findByIdForUpdate(@Param("id") Long id);
+    @Query("select a from Attendant a where a.id = :id")
+    Optional<Attendant> findByIdForUpdate(@Param("id") Long id);
 }

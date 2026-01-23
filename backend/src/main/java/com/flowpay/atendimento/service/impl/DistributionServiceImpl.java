@@ -81,9 +81,10 @@ public class DistributionServiceImpl implements DistributionService {
   }
 
   private boolean tryAssign(ServiceRequest req) {
-    Long attendantId = attendantRepo.lockBestAvailableAttendantId(req.getTeam().name());
-    if (attendantId == null) return false;
+    Optional<Long> attendantIdOptional = attendantRepo.lockBestAvailableAttendantId(req.getTeam().name());
 
+    if (!attendantIdOptional.isPresent()) return false;
+    Long attendantId = attendantIdOptional.get();
     attendantRepo.findByIdForUpdate(attendantId)
       .orElseThrow(() -> new NotFoundException("Atendente não encontrado: " + attendantId));
 
