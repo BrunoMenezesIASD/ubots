@@ -34,6 +34,7 @@ public class DistributionServiceImpl implements DistributionService {
   @Override
   @Transactional
   public ServiceRequest createAndDistribute(String customerName, String subject) {
+
     Team team = Team.fromSubject(subject);
 
     ServiceRequest req = ServiceRequest.builder()
@@ -113,12 +114,14 @@ public class DistributionServiceImpl implements DistributionService {
 
   private void tryDistributeFromQueue(Team team) {
     while (true) {
-      Optional<QueueItem> qiOpt = queueRepo.findFirstByTeamForUpdate(team);
+      Optional<QueueItem> qiOpt = queueRepo.findNextByTeamForUpdateSkipLocked(team.name());
       if (qiOpt.isEmpty()) return;
 
       QueueItem qi = qiOpt.get();
+
       ServiceRequest queued = requestRepo.findByIdForUpdate(qi.getServiceRequestId())
-        .orElseThrow(() -> new NotFoundException("Atendimento enfileirado não encontrado: " + qi.getServiceRequestId()));
+              .orElseThrow(() -> new NotFoundException(
+                      "Atendimento enfileirado não encontrado: " + qi.getServiceRequestId()));
 
       if (queued.getStatus() != ServiceRequestStatus.QUEUED) {
         queueRepo.delete(qi);
@@ -126,10 +129,11 @@ public class DistributionServiceImpl implements DistributionService {
       }
 
       if (!tryAssign(queued)) {
-        return;
+        return; // sem vaga, não consome a fila
       }
 
-      queueRepo.delete(qi);
+      queueRepo.delete(qi); // assigned -> remove da fila e tenta pegar mais
     }
   }
+
 }

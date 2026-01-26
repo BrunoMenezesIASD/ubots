@@ -19,9 +19,25 @@ public interface ServiceRequestRepository extends JpaRepository<ServiceRequest, 
   @Query("select r from ServiceRequest r where r.id = :id")
   Optional<ServiceRequest> findByIdForUpdate(@Param("id") Long id);
 
+  // ✅ Próximo da fila FIFO com concorrência (Postgres)
+  @Query(
+          value = """
+      select *
+      from service_requests r
+      where r.team = :team
+        and r.status = 'QUEUED'
+      order by r.created_at asc
+      for update skip locked
+      limit 1
+      """,
+          nativeQuery = true
+  )
+  Optional<ServiceRequest> findNextQueuedByTeamForUpdate(@Param("team") String team);
+
   @Query("select r.status as status, count(r) as total from ServiceRequest r group by r.status")
   List<Object[]> countGroupedByStatus();
 
   @Query("select r.team as team, r.status as status, count(r) as total from ServiceRequest r group by r.team, r.status")
   List<Object[]> countGroupedByTeamAndStatus();
 }
+

@@ -12,7 +12,14 @@ public interface QueueItemRepository extends JpaRepository<QueueItem, Long> {
 
   long countByTeam(Team team);
 
-  @Lock(LockModeType.PESSIMISTIC_WRITE)
-  @Query("select q from QueueItem q where q.team = :team order by q.enqueuedAt asc, q.id asc")
-  Optional<QueueItem> findFirstByTeamForUpdate(@Param("team") Team team);
+  @Query(value = """
+      SELECT *
+      FROM queue_items q
+      WHERE q.team = :team
+      ORDER BY q.enqueued_at ASC, q.id ASC
+      FOR UPDATE SKIP LOCKED
+      LIMIT 1
+      """, nativeQuery = true)
+  Optional<QueueItem> findNextByTeamForUpdateSkipLocked(@Param("team") String team);
 }
+

@@ -1,10 +1,10 @@
 INSERT INTO attendants (name, team, active) VALUES
-  ('Ana Cartões', 'CARTOES', true),
-  ('Bruno Cartões', 'CARTOES', true),
-  ('Carla Cartões', 'CARTOES', true),
-  ('Daniel Empréstimos', 'EMPRESTIMOS', true),
-  ('Eduardo Empréstimos', 'EMPRESTIMOS', true),
-  ('Fernanda Empréstimos', 'EMPRESTIMOS', true),
-  ('Gabi Outros', 'OUTROS', true),
-  ('Hugo Outros', 'OUTROS', true),
-  ('Iris Outros', 'OUTROS', true);
+  ('Ana Claudia', 'CARTOES', true),
+  ('Bruno Menzes', 'CARTOES', true),
+  ('Carla Castro', 'CARTOES', true),
+  ('Daniel Fonseca', 'EMPRESTIMOS', true),
+  ('Eduardo Ramos', 'EMPRESTIMOS', true),
+  ('Fernanda Correa', 'EMPRESTIMOS', true),
+  ('Gabriel Santos', 'OUTROS', true),
+  ('Hugo Turquete', 'OUTROS', true),
+  ('Iris Alves', 'OUTROS', true);

@@ -22,13 +22,13 @@ CREATE TABLE IF NOT EXISTS service_requests (
 
 CREATE TABLE IF NOT EXISTS queue_items (
   id BIGSERIAL PRIMARY KEY,
-  service_request_id BIGINT NOT NULL UNIQUE,
+  service_request_id bigint NOT NULL UNIQUE REFERENCES service_requests,
   team VARCHAR(30) NOT NULL,
   enqueued_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   CONSTRAINT fk_queue_items_request
-    FOREIGN KEY (service_request_id) REFERENCES service_requests(id)
+    FOREIGN KEY (service_request_id) REFERENCES service_requests(id) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_attendants_team_active ON attendants(team, active);
-CREATE INDEX idx_service_requests_team_status ON service_requests(team, status);
-CREATE INDEX idx_queue_items_team_enqueued ON queue_items(team, enqueued_at, id);
+CREATE INDEX IF NOT EXISTS idx_attendants_team_active ON attendants(team, active);
+CREATE INDEX IF NOT EXISTS idx_service_requests_team_status ON service_requests(team, status);
+CREATE INDEX IF NOT EXISTS idx_queue_items_team_enqueued ON queue_items(team, enqueued_at, id);
