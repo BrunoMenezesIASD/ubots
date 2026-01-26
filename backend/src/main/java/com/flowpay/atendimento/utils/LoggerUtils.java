@@ -64,7 +64,7 @@ public class LoggerUtils {
         );
     }
 
-    public static <T> void buildLogErrorGeneric(Exception ex, Class<T> component) {
+    public static <T> void buildLogErrorGeneric(HttpServletRequest request, Exception ex, Class<T> component) {
 
         final Logger logger = LoggerFactory.getLogger(component);
 
@@ -80,19 +80,22 @@ public class LoggerUtils {
         );
     }
 
-    public static <T> void buildLogWarnGeneric(Exception ex, Class<T> component) {
+    public static <T> void buildLogWarnGeneric(HttpServletRequest request, Class<T> component) {
 
         final Logger logger = LoggerFactory.getLogger(component);
 
         logger.warn("""
             WARN
-            Tipo........: {}
-            Mensagem....: {}
+            Class.........: {}
+            URL....:......: {}
+            Metod.........: {}
+            Request.......: {}
          
             """,
-                ex.getClass().getSimpleName(),
-                ex.getMessage(),
-                ex
+                request.getClass().getSimpleName(),
+                request.getRequestURL(),
+                request.getMethod(),
+                request
         );
     }
 }
