@@ -21,35 +21,41 @@ public class ApiExceptionHandler {
   @ExceptionHandler(NotFoundException.class)
   public ResponseEntity<ProblemDetail> handleNotFound(NotFoundException ex, HttpServletRequest request) {
     ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
-    LoggerUtils.buildLogErrorGlobalHandler(ex, request);
+    String errorId = UUID.randomUUID().toString();
+    LoggerUtils.buildLogErrorGlobalHandler(ex, request, errorId);
     pd.setTitle("Not Found");
     pd.setDetail(ex.getMessage());
     pd.setType(URI.create("https://flowpay.local/problems/not-found"));
     pd.setProperty("path", request.getRequestURI());
+    pd.setProperty("errorId", errorId);
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(pd);
   }
 
   @ExceptionHandler(BusinessRuleException.class)
   public ResponseEntity<ProblemDetail> handleBusiness(BusinessRuleException ex, HttpServletRequest request) {
     ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.UNPROCESSABLE_ENTITY);
-    LoggerUtils.buildLogErrorGlobalHandler(ex, request);
+    String errorId = UUID.randomUUID().toString();
+    LoggerUtils.buildLogErrorGlobalHandler(ex, request, errorId);
     pd.setTitle("Business rule violation");
     pd.setDetail(ex.getMessage());
     pd.setType(URI.create("https://flowpay.local/problems/business-rule"));
     pd.setProperty("path", request.getRequestURI());
+    pd.setProperty("errorId", errorId);
     return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(pd);
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ProblemDetail> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
     ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-    LoggerUtils.buildLogErrorGlobalHandler(ex, request);
+    String errorId = UUID.randomUUID().toString();
+    LoggerUtils.buildLogErrorGlobalHandler(ex, request, errorId);
     pd.setTitle("Validation error");
     pd.setType(URI.create("https://flowpay.local/problems/validation"));
     Map<String, String> errors = new HashMap<>();
     ex.getBindingResult().getFieldErrors().forEach(fe -> errors.put(fe.getField(), fe.getDefaultMessage()));
     pd.setProperty("errors", errors);
     pd.setProperty("path", request.getRequestURI());
+    pd.setProperty("errorId", errorId);
     return ResponseEntity.badRequest().body(pd);
   }
 
@@ -61,24 +67,28 @@ public class ApiExceptionHandler {
   })
   @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
   public ProblemDetail handleInfrastructureExceptions(Exception ex, HttpServletRequest request) {
-    LoggerUtils.buildLogErrorGlobalHandler(ex, request);
+    String errorId = UUID.randomUUID().toString();
+    LoggerUtils.buildLogErrorGlobalHandler(ex, request, errorId);
     return ProblemDetailUtils.buildProblem(
             HttpStatus.SERVICE_UNAVAILABLE,
             "Falha na Comunicação com Dependência",
             ex.getMessage(),
-            request
+            request,
+            errorId
     );
   }
 
   @ExceptionHandler(TimeoutException.class)
   @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
   public ProblemDetail handleTimeoutException(Exception ex, HttpServletRequest request) {
-    LoggerUtils.buildLogErrorGlobalHandler(ex, request);
+    String errorId = UUID.randomUUID().toString();
+    LoggerUtils.buildLogErrorGlobalHandler(ex, request, errorId);
     return ProblemDetailUtils.buildProblem(
             HttpStatus.SERVICE_UNAVAILABLE,
             "Tempo Limite de Operação Excedido",
             ex.getMessage(),
-            request
+            request,
+            errorId
     );
   }
 
